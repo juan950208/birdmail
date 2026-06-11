@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birdmail - Bandeja de Entrada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900 antialiased">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <div class="w-64 bg-white border-r border-gray-200 flex flex-col justify-between">
+            <div class="p-5">
+                <div class="flex items-center space-x-2 text-blue-600 font-bold text-xl tracking-wider mb-6">
+                    <span>🐦</span>
+                    <span>Birdmail</span>
+                </div>
+                
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition mb-6 shadow-sm">
+                    Redactar correo
+                </button>
+
+                <nav class="space-y-1">
+                    <a href="#" class="flex items-center space-x-3 bg-blue-50 text-blue-700 font-medium py-2 px-3 rounded-lg text-sm">
+                        <span>📥</span>
+                        <span>Bandeja de entrada</span>
+                    </nav>
+                    <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-gray-100 py-2 px-3 rounded-lg text-sm transition">
+                        <span>🚀</span>
+                        <span>Enviados</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 text-gray-600 hover:bg-gray-100 py-2 px-3 rounded-lg text-sm transition">
+                        <span>📝</span>
+                        <span>Borradores</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="p-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between text-sm">
+                <span class="font-medium text-gray-700 truncate">usuario@birdmail.com</span>
+                <a href="#" class="text-red-500 hover:text-red-700 font-semibold text-xs">Salir</a>
+            </div>
+        </div>
+
+        <div class="flex-1 flex flex-col min-w-0 bg-white">
+            
+            <div class="h-16 border-b border-gray-200 flex items-center justify-between px-6">
+                <h1 class="text-lg font-semibold text-gray-800">Bandeja de entrada</h1>
+                <div class="text-sm text-gray-500">3 correos sin leer</div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto divide-y divide-gray-100">
+                
+                <div class="p-4 hover:bg-gray-50 cursor-pointer flex items-start space-x-4 transition bg-blue-50/40">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-semibold text-gray-900">Soporte Spring Boot</span>
+                            <span class="text-xs text-gray-500 font-medium">10:30 AM</span>
+                        </div>
+                        <p class="text-sm font-semibold text-blue-600 truncate">¡Tu API de Birdmail está respondiendo correctamente!</p>
+                        <p class="text-xs text-gray-500 truncate mt-0.5">Hola, este es un correo de prueba simulando la integración del backend con nuestra base de datos Postgres...</p>
+                    </div>
+                </div>
+
+                <div class="p-4 hover:bg-gray-50 cursor-pointer flex items-start space-x-4 transition">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">GitHub Security</span>
+                            <span class="text-xs text-gray-400">Ayer</span>
+                        </div>
+                        <p class="text-sm font-medium text-gray-800 truncate">Llave SSH agregada con éxito</p>
+                        <p class="text-xs text-gray-400 truncate mt-0.5">Se ha registrado una nueva llave pública en tu cuenta de GitHub desde la terminal de tu computadora.</p>
+                    </div>
+                </div>
+
+                <div class="p-4 hover:bg-gray-50 cursor-pointer flex items-start space-x-4 transition">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">Microsoft Defender</span>
+                            <span class="text-xs text-gray-400">08 Jun</span>
+                        </div>
+                        <p class="text-sm font-medium text-gray-800 truncate">Exclusiones configuradas para IntelliJ</p>
+                        <p class="text-xs text-gray-400 truncate mt-0.5">El rendimiento de tu IDE ha mejorado drásticamente tras ignorar las carpetas del compilador.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
