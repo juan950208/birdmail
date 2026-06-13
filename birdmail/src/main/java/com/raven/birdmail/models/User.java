@@ -1,4 +1,4 @@
-package com.raven.birdmail.Models;
+package com.raven.birdmail.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
