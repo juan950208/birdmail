@@ -1,7 +1,8 @@
-package com.raven.birdmail.DTO;
+package com.raven.birdmail.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,15 +16,19 @@ public class UserRegisterDTO {
     private static final String EMPTY_MSG = "this field cannot be empty";
 
     @NotBlank(message = EMPTY_MSG)
-    @Size(min = 5, max = 20, message = "The username must contain at least 5 characters")
-    private String username;
-
-    @NotBlank(message = EMPTY_MSG)
-    @Email(message = "Email format not valid")
+    @Pattern(regexp = "^[a-zA-Z0-9._]+$",
+            message = "Only letters, numbers, dots and underscores allowed. No spaces.")
     private String email;
 
     @NotBlank(message = EMPTY_MSG)
-    @Size(min = 8, message = "The password must contain at least 8 characters")
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d).{8,}$",
+            message =  """
+        Password must contain:
+        - at least 8 characters
+        - one uppercase letter
+        - one lowercase letter
+        - one number
+        """)
     private String password;
 
     @NotBlank(message = EMPTY_MSG)

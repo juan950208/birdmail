@@ -1,7 +1,8 @@
 package com.raven.birdmail.service;
 
-import com.raven.birdmail.DTO.UserRegisterDTO;
+import com.raven.birdmail.dto.UserRegisterDTO;
 import com.raven.birdmail.Repository.UserRepository;
+import com.raven.birdmail.exception.EmailAlreadyExistsException;
 import com.raven.birdmail.models.User;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
@@ -13,13 +14,17 @@ import java.time.LocalDateTime;
 @Service
 public class UserService {
 
+    private static final String DOMAIN = "@birdmail.com";
+
     @Autowired
     private UserRepository userRepository;
 
     public User createUser(UserRegisterDTO userRegisterDTO) {
 
-        if (userRepository.exists(userRegisterDTO.getUsername())) {
-            throw new IllegalArgumentException("The username is already in use");
+        if (userRepository.existsByEmail(userRegisterDTO.getEmail() + DOMAIN)) {
+            throw new EmailAlreadyExistsException(
+                    "The provided email is already in use"
+            );
         }
 
         User newUser = new User();
@@ -27,11 +32,10 @@ public class UserService {
         Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2d);
         String hashedPassword = argon2.hash(1, 1024, 1, userRegisterDTO.getPassword());
 
-        newUser.setUsername(userRegisterDTO.getUsername());
         newUser.setEmail(userRegisterDTO.getEmail());
         newUser.setFirstName(userRegisterDTO.getFirstName());
         newUser.setLastName(userRegisterDTO.getLastName());
-        newUser.setPassword(hashedPassword);
+        newUser.setPasswordHash(hashedPassword);
         newUser.setCreatedAt(LocalDateTime.now());
         newUser.setActive(true);
 

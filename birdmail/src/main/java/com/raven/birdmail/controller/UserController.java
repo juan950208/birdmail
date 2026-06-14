@@ -1,6 +1,8 @@
 package com.raven.birdmail.controller;
 
-import com.raven.birdmail.DTO.UserRegisterDTO;
+import com.raven.birdmail.Utils.JwtUtil;
+import com.raven.birdmail.dto.UserRegisterDTO;
+import com.raven.birdmail.dto.UserResponseDTO;
 import com.raven.birdmail.models.User;
 import com.raven.birdmail.service.UserService;
 import jakarta.validation.Valid;
@@ -16,9 +18,21 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    JwtUtil jwtUtil;
+
     @RequestMapping(value = "birdmail/users", method = RequestMethod.POST)
-    public ResponseEntity<User> create(@Valid @RequestBody UserRegisterDTO userDTO) {
+    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserRegisterDTO userDTO) {
         User createdUser = userService.createUser(userDTO);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+
+        UserResponseDTO response = new UserResponseDTO(
+                createdUser.getId(),
+                createdUser.getFirstName(),
+                createdUser.getLastName(),
+                createdUser.getEmail()
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
     }
 }

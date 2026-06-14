@@ -3,12 +3,17 @@ package com.raven.birdmail.Repository;
 import com.raven.birdmail.models.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @Transactional
 public class UserRepositoryImpl implements UserRepository {
+
+    private static final String DOMAIN = "@birdmail.com";
 
     @PersistenceContext
     EntityManager entityManager;
@@ -20,24 +25,34 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User create(User user) {
-
-//        if (exists(user.getUsername())) {
-//            throw new IllegalArgumentException("The username is already in use");
-//        }
-
+        user.setEmail(user.getEmail() + DOMAIN);
         return entityManager.merge(user);
     }
 
     @Override
-    public boolean exists(String username) {
-//        String jpql = "SELECT COUNT FROM User u where u.username = :username";
-//
-//        Long count = entityManager
-//                .createQuery(jpql, Long.class)
-//                .setParameter("username", username)
-//                .getSingleResult();
-//
-//        return count > 0;
-        return false;
+    public boolean existsByEmail(String email) {
+        String jpql = "SELECT COUNT(u) FROM User u where u.email = :email";
+
+        Long count = entityManager
+                .createQuery(jpql, Long.class)
+                .setParameter("email", email)
+                .getSingleResult();
+
+        return count > 0;
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        String sql = "FROM User WHERE email = :email";
+
+        TypedQuery<User> query = entityManager.createQuery(sql, User.class)
+                .setParameter("email", email);
+        List<User> resultList = query.getResultList();
+
+        if (resultList.isEmpty()) {
+            return null;
+        }
+
+        return resultList.getFirst();
     }
 }

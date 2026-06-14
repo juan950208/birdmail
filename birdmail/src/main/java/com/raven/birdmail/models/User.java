@@ -1,6 +1,7 @@
 package com.raven.birdmail.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,14 +22,11 @@ public class User {
     @Column(name = "id")
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
-    private String username;
-
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
     @Column(name = "password_hash", nullable = false, length = 255)
-    private String password;
+    private String passwordHash;
 
     @Column(name = "first_name", length = 50)
     private String firstName;
