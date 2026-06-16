@@ -1,5 +1,6 @@
 package com.raven.birdmail.Utils;
 
+import com.raven.birdmail.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -13,12 +14,15 @@ public class JwtUtil {
     private static final SecretKey SECRET_KEY = Jwts.SIG.HS256.key().build();
     private static final long EXPIRATION = 3600000;
 
-    public String generateToken(String email) {
+    public String generateToken(User user) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + EXPIRATION);
 
         return Jwts.builder()
-                .subject(email)
+                .subject(user.getEmail())
+                .claim("id", user.getId())
+                .claim("firstName", user.getFirstName())
+                .claim("lastName", user.getLastName())
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(SECRET_KEY)

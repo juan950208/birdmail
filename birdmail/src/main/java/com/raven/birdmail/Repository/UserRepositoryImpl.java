@@ -1,5 +1,6 @@
 package com.raven.birdmail.Repository;
 
+import com.raven.birdmail.constant.GlobalConstants;
 import com.raven.birdmail.models.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -13,8 +14,6 @@ import java.util.List;
 @Transactional
 public class UserRepositoryImpl implements UserRepository {
 
-    private static final String DOMAIN = "@birdmail.com";
-
     @PersistenceContext
     EntityManager entityManager;
 
@@ -25,7 +24,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User create(User user) {
-        user.setEmail(user.getEmail() + DOMAIN);
+        user.setEmail(user.getEmail() + GlobalConstants.DOMAIN);
         return entityManager.merge(user);
     }
 

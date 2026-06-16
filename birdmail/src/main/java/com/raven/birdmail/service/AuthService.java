@@ -1,6 +1,7 @@
 package com.raven.birdmail.service;
 
 import com.raven.birdmail.Repository.UserRepository;
+import com.raven.birdmail.constant.GlobalConstants;
 import com.raven.birdmail.dto.LoginDTO;
 import com.raven.birdmail.exception.InvalidCredentialsException;
 import com.raven.birdmail.models.User;
@@ -15,8 +16,8 @@ public class AuthService {
     @Autowired
     UserRepository userRepository;
 
-    public void login(LoginDTO loginDTO) {
-        User user = userRepository.findByEmail(loginDTO.getEmail());
+    public User login(LoginDTO loginDTO) {
+        User user = userRepository.findByEmail(loginDTO.getEmail() + GlobalConstants.DOMAIN);
 
         if (user == null) {
             throw new InvalidCredentialsException("Invalid email or password");
@@ -31,6 +32,6 @@ public class AuthService {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
-        System.out.println("User logged");
+        return user;
     }
 }
