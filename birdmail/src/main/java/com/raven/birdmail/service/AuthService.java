@@ -1,6 +1,6 @@
 package com.raven.birdmail.service;
 
-import com.raven.birdmail.Repository.UserRepository;
+import com.raven.birdmail.repository.UserRepository;
 import com.raven.birdmail.constant.GlobalConstants;
 import com.raven.birdmail.dto.LoginDTO;
 import com.raven.birdmail.exception.InvalidCredentialsException;

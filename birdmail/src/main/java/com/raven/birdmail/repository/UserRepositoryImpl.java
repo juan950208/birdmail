@@ -1,4 +1,4 @@
-package com.raven.birdmail.Repository;
+package com.raven.birdmail.repository;
 
 import com.raven.birdmail.constant.GlobalConstants;
 import com.raven.birdmail.models.User;

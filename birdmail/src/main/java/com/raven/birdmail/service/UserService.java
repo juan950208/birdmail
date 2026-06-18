@@ -1,7 +1,7 @@
 package com.raven.birdmail.service;
 
 import com.raven.birdmail.dto.UserRegisterDTO;
-import com.raven.birdmail.Repository.UserRepository;
+import com.raven.birdmail.repository.UserRepository;
 import com.raven.birdmail.exception.EmailAlreadyExistsException;
 import com.raven.birdmail.models.User;
 import de.mkammerer.argon2.Argon2;

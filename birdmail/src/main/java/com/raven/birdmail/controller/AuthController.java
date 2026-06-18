@@ -1,16 +1,12 @@
 package com.raven.birdmail.controller;
 
-import com.raven.birdmail.Repository.UserRepositoryImpl;
 import com.raven.birdmail.Utils.JwtUtil;
-import com.raven.birdmail.constant.GlobalConstants;
 import com.raven.birdmail.dto.LoginDTO;
 import com.raven.birdmail.dto.LoginResponseDTO;
-import com.raven.birdmail.dto.UserResponseDTO;
 import com.raven.birdmail.models.User;
 import com.raven.birdmail.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +28,8 @@ public class AuthController {
         User loggedUser = authService.login(loginDTO);
 
         String token = jwtUtil.generateToken(loggedUser);
+        String email = jwtUtil.getEmailFromToken(token);
 
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+        return ResponseEntity.ok(new LoginResponseDTO(token, email));
     }
 }
