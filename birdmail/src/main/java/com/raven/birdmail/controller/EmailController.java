@@ -1,5 +1,6 @@
 package com.raven.birdmail.controller;
 
+import com.raven.birdmail.Utils.JwtUtil;
 import com.raven.birdmail.dto.EmailDTO;
 import com.raven.birdmail.dto.EmailResponseDTO;
 import com.raven.birdmail.models.Email;
@@ -16,17 +17,23 @@ import java.util.List;
 public class EmailController {
 
     @Autowired
+    JwtUtil jwtUtil;
+
+    @Autowired
     EmailService emailService;
 
     @RequestMapping(value = "birdmail/send_email", method = RequestMethod.POST)
-    public ResponseEntity<EmailResponseDTO> sendEmail(@RequestBody EmailDTO emailDTO) {
+    public ResponseEntity<EmailResponseDTO> sendEmail(
+            @RequestHeader(value = "Authorization") String token,
+            @RequestBody EmailDTO emailDTO) {
 
-//        System.out.printf("***********\nReceived email\nsender: %s\nreceiver: %s\n" +
-//                "subject: %s\nbody: %s\n***********\n", emailDTO.getSenderId(),
-//                emailDTO.getRecipientId(), emailDTO.getSubject(),
-//                emailDTO.getBody());
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).build();
+        }
 
-        Email createdEmail = emailService.sendEmail(emailDTO);
+        String senderEmail = jwtUtil.getEmailFromToken(token);
+
+        Email createdEmail = emailService.sendEmail(emailDTO, senderEmail);
         EmailResponseDTO response = new EmailResponseDTO(
                 createdEmail.getSender().getEmail(),
                 createdEmail.getRecipient().getEmail(),
@@ -39,15 +46,20 @@ public class EmailController {
                 .body(response);
     }
 
-    @RequestMapping(value = "birdmail/emails/{email}")
+    @RequestMapping(value = "birdmail/inbox")
     public ResponseEntity<List<EmailResponseDTO>> getReceivedEmails(
-            @RequestHeader(value = "Authorization") String token,
-            @PathVariable String email) {
+            @RequestHeader(value = "Authorization") String token) {
 
-        List<Email> result = emailService.getAllReceivedEmails(email);
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String email = jwtUtil.getEmailFromToken(token);
+
+        List<Email> emails = emailService.getAllReceivedEmails(email);
         List<EmailResponseDTO> response = new ArrayList<>();
 
-        for (Email e : result) {
+        for (Email e : emails) {
             EmailResponseDTO emailDTO = new EmailResponseDTO(
                     e.getSender().getEmail(),
                     e.getRecipient().getEmail(),
@@ -63,8 +75,34 @@ public class EmailController {
                 .body(response);
     }
 
-    public ResponseEntity<List<EmailResponseDTO>> getSentEmails(String email) {
-        return null;
+    @RequestMapping(value = "birdmail/sent")
+    public ResponseEntity<List<EmailResponseDTO>> getSentEmails(
+            @RequestHeader(value = "Authorization") String token) {
+
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String email = jwtUtil.getEmailFromToken(token);
+
+        List<Email> emails = emailService.getAllSentEmails(email);
+        List<EmailResponseDTO> response = new ArrayList<>();
+
+        for (Email e : emails) {
+            EmailResponseDTO emailDTO = new EmailResponseDTO(
+                    e.getSender().getEmail(),
+                    e.getRecipient().getEmail(),
+                    e.getSubject(),
+                    e.getBody(),
+                    e.getSentAt()
+            );
+
+            response.add(emailDTO);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+
     }
 
 }

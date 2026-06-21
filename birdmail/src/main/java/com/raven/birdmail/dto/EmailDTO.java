@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmailDTO {
-    private Long senderId;
     private Long recipientId;
     private String subject;
     private String body;

@@ -4,15 +4,28 @@ import com.raven.birdmail.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
+@Getter
 public class JwtUtil {
-    private static final SecretKey SECRET_KEY = Jwts.SIG.HS256.key().build();
+
+    @Value("${jwt.secret}")
+    private String secret;
+    private SecretKey secretKey;
     private static final long EXPIRATION = 3600000;
+
+    @PostConstruct
+    public void init() {
+        secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public String generateToken(User user) {
         Date now = new Date();
@@ -25,13 +38,13 @@ public class JwtUtil {
                 .claim("lastName", user.getLastName())
                 .issuedAt(now)
                 .expiration(expiration)
-                .signWith(SECRET_KEY)
+                .signWith(secretKey)
                 .compact();
     }
 
-    public static Claims parseToken(String token) throws JwtException {
+    public Claims parseToken(String token) throws JwtException {
         return Jwts.parser()
-                .verifyWith(SECRET_KEY)
+                .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -44,6 +57,15 @@ public class JwtUtil {
         } catch (JwtException e) {
             System.out.println("Error parsing token: " + e.getMessage());
             return null;
+        }
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            parseToken(token);
+            return true;
+        } catch (JwtException ex) {
+            return false;
         }
     }
 }

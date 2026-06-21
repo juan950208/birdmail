@@ -21,15 +21,15 @@ public class EmailService {
     @Autowired
     EmailRepository emailRepository;
 
-    public Email sendEmail(EmailDTO emailDTO) {
+    public Email sendEmail(EmailDTO emailDTO, String senderEmail) {
 
         if (userRepository.byId(emailDTO.getRecipientId()) == null ||
-        userRepository.byId(emailDTO.getSenderId()) == null) {
+        userRepository.findByEmail(senderEmail) == null) {
             throw new UserNotFoundException("ERROR the user does not exist");
         }
 
         Email email = new Email();
-        email.setSender(userRepository.byId(emailDTO.getSenderId()));
+        email.setSender(userRepository.findByEmail(senderEmail));
         email.setRecipient(userRepository.byId(emailDTO.getRecipientId()));
         email.setSubject(emailDTO.getSubject());
         email.setBody(emailDTO.getBody());
@@ -47,5 +47,15 @@ public class EmailService {
         }
 
         return emailRepository.getAllReceivedEmails(u);
+    }
+
+    public List<Email> getAllSentEmails(String email) {
+        User u = userRepository.findByEmail(email);
+
+        if (u == null) {
+            throw new UserNotFoundException("ERROR user not found");
+        }
+
+        return emailRepository.getAllSentEmails(u);
     }
 }
