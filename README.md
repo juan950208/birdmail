@@ -19,6 +19,7 @@ Authentication and email management system with Java and Spring boot
 - User registration (implemented with frontend)
 - Login (implemented with frontend)
 - Send email (through API client: Postman, Insomnia, etc)
+- Email only implemented with one sender and one recipient, on the future one email must have more than one recipient
 - Load inbox (through API client)
 - Load sent emails (through API client)
 
