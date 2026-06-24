@@ -6,27 +6,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Entity
+@Table(name = "email_recipient")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Email {
+public class EmailRecipient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id")
-    private User sender;
+    @JoinColumn(name = "email_id")
+    private Email email;
 
-    private String subject;
+    @ManyToOne
+    @JoinColumn(name = "recipient_id")
+    private User recipient;
 
-    @Column(columnDefinition = "TEXT")
-    private String body;
-
-    private LocalDateTime date;
+    @Enumerated(EnumType.STRING)
+    private RecipientType recipientType;
 }

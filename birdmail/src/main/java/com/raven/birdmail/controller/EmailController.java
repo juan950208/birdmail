@@ -1,7 +1,7 @@
 package com.raven.birdmail.controller;
 
 import com.raven.birdmail.Utils.JwtUtil;
-import com.raven.birdmail.dto.EmailDTO;
+import com.raven.birdmail.dto.SendEmailDTO;
 import com.raven.birdmail.dto.EmailResponseDTO;
 import com.raven.birdmail.models.Email;
 import com.raven.birdmail.service.EmailService;
@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class EmailController {
     @RequestMapping(value = "birdmail/send_email", method = RequestMethod.POST)
     public ResponseEntity<EmailResponseDTO> sendEmail(
             @RequestHeader(value = "Authorization") String token,
-            @RequestBody EmailDTO emailDTO) {
+            @RequestBody SendEmailDTO sendEmailDTO) {
 
         if (!jwtUtil.validateToken(token)) {
             return ResponseEntity.status(401).build();
@@ -33,13 +34,13 @@ public class EmailController {
 
         String senderEmail = jwtUtil.getEmailFromToken(token);
 
-        Email createdEmail = emailService.sendEmail(emailDTO, senderEmail);
+        Email createdEmail = emailService.sendEmail(sendEmailDTO, senderEmail);
         EmailResponseDTO response = new EmailResponseDTO(
                 createdEmail.getSender().getEmail(),
                 createdEmail.getRecipient().getEmail(),
                 createdEmail.getSubject(),
                 createdEmail.getBody(),
-                createdEmail.getSentAt()
+                LocalDateTime.now()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -65,7 +66,7 @@ public class EmailController {
                     e.getRecipient().getEmail(),
                     e.getSubject(),
                     e.getBody(),
-                    e.getSentAt()
+                    e.getDate()
             );
 
             response.add(emailDTO);
@@ -94,7 +95,7 @@ public class EmailController {
                     e.getRecipient().getEmail(),
                     e.getSubject(),
                     e.getBody(),
-                    e.getSentAt()
+                    e.getDate()
             );
 
             response.add(emailDTO);

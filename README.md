@@ -2,6 +2,8 @@
 
 Authentication and email management system with Java and Spring boot
 
+*** Currently refactoring the email service to make it possible to send one email to different recipients ***
+
 ## Technologies
 
 - Java 21

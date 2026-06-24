@@ -1,9 +1,11 @@
 package com.raven.birdmail.service;
 
+import com.raven.birdmail.dto.EmailRecipientDTO;
+import com.raven.birdmail.models.EmailRecipient;
 import com.raven.birdmail.models.User;
 import com.raven.birdmail.repository.EmailRepository;
 import com.raven.birdmail.repository.UserRepository;
-import com.raven.birdmail.dto.EmailDTO;
+import com.raven.birdmail.dto.SendEmailDTO;
 import com.raven.birdmail.exception.UserNotFoundException;
 import com.raven.birdmail.models.Email;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,22 +23,45 @@ public class EmailService {
     @Autowired
     EmailRepository emailRepository;
 
-    public Email sendEmail(EmailDTO emailDTO, String senderEmail) {
-
-        if (userRepository.byId(emailDTO.getRecipientId()) == null ||
-        userRepository.findByEmail(senderEmail) == null) {
-            throw new UserNotFoundException("ERROR the user does not exist");
-        }
+    public Email sendEmail(SendEmailDTO sendEmailDTO, String senderEmail) {
 
         Email email = new Email();
         email.setSender(userRepository.findByEmail(senderEmail));
-        email.setRecipient(userRepository.byId(emailDTO.getRecipientId()));
-        email.setSubject(emailDTO.getSubject());
-        email.setBody(emailDTO.getBody());
-        email.setSentAt(LocalDateTime.now());
+        email.setSubject(sendEmailDTO.getSubject());
+        email.setBody(sendEmailDTO.getBody());
+        email.setDate(LocalDateTime.now());
 
-        return emailRepository.sendEmail(email);
+        Email savedEmail = emailRepository.saveEmail(email);
+
+        for (EmailRecipientDTO emailRecipientDTO : sendEmailDTO.getEmailRecipientDTOList()) {
+            EmailRecipient emailRecipient = new EmailRecipient();
+            emailRecipient.setEmail(savedEmail);
+            emailRecipient.setRecipient(userRepository.byId(emailRecipientDTO.getRecipientId()));
+            emailRecipient.setRecipientType(emailRecipientDTO.getRecipientType());
+
+            emailRepository.saveEmailRecipientRelation(emailRecipient);
+        }
+
+
+        return null;
     }
+
+//    public Email sendEmail(SendEmailDTO sendEmailDTO, String senderEmail) {
+//
+//        if (userRepository.byId(sendEmailDTO.getRecipientId()) == null ||
+//        userRepository.findByEmail(senderEmail) == null) {
+//            throw new UserNotFoundException("ERROR the user does not exist");
+//        }
+//
+//        Email email = new Email();
+//        email.setSender(userRepository.findByEmail(senderEmail));
+//        email.setRecipient(userRepository.byId(sendEmailDTO.getRecipientId()));
+//        email.setSubject(sendEmailDTO.getSubject());
+//        email.setBody(sendEmailDTO.getBody());
+//        email.setDate(LocalDateTime.now());
+//
+//        return emailRepository.sendEmail(email);
+//    }
 
     public List<Email> getAllReceivedEmails(String email) {
 

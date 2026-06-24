@@ -1,6 +1,7 @@
 package com.raven.birdmail.repository;
 
 import com.raven.birdmail.models.Email;
+import com.raven.birdmail.models.EmailRecipient;
 import com.raven.birdmail.models.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -17,8 +18,16 @@ public class EmailRepository {
     @PersistenceContext
     EntityManager entityManager;
 
-    public Email sendEmail(Email email) {
+    public Email saveEmail(Email email) {
         return entityManager.merge(email);
+    }
+
+    public void saveEmailRecipientRelation(EmailRecipient emailRecipient) {
+            entityManager.merge(emailRecipient);
+    }
+
+    public Email findById(Long id) {
+        return entityManager.find(Email.class, id);
     }
 
     public List<Email> getAllReceivedEmails(User user) {
