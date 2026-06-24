@@ -32,7 +32,6 @@ public class EmailService {
         Email email = new Email();
         User sender = userRepository.findByEmail(senderEmail);
         email.setSender(sender);
-        //email.setSender(userRepository.findByEmail(senderEmail));
         email.setSubject(sendEmailDTO.getSubject());
         email.setBody(sendEmailDTO.getBody());
         email.setDate(LocalDateTime.now());
@@ -44,7 +43,6 @@ public class EmailService {
             emailRecipient.setEmail(savedEmail);
             User recipient = userRepository.byId(emailRecipientDTO.getRecipientId());
             emailRecipient.setRecipient(recipient);
-            //emailRecipient.setRecipient(userRepository.byId(emailRecipientDTO.getRecipientId()));
             emailRecipient.setRecipientType(emailRecipientDTO.getRecipientType());
 
             recipientsEmail.add(recipient.getEmail());
@@ -77,15 +75,24 @@ public class EmailService {
 //        return emailRepository.sendEmail(email);
 //    }
 
-    public List<Email> getAllReceivedEmails(String email) {
+    public List<EmailResponseDTO> getAllReceivedEmails(String email) {
 
         User u = userRepository.findByEmail(email);
+        List<EmailRecipient> emailRecipientList = emailRepository.getEmailRecipientByUser(u);
+        List<EmailResponseDTO> emailResponseDTOList = new ArrayList<>();
 
-        if (u == null) {
-            throw new UserNotFoundException("ERROR user not found");
+        for (EmailRecipient emailRecipient : emailRecipientList) {
+            EmailResponseDTO emailResponseDTO = new EmailResponseDTO();
+            Email receivedEmail = emailRecipient.getEmail();
+            emailResponseDTO.setSenderEmail(receivedEmail.getSender().getEmail());
+            emailResponseDTO.setSubject(receivedEmail.getSubject());
+            emailResponseDTO.setBody(receivedEmail.getBody());
+            emailResponseDTO.setSentAt(receivedEmail.getDate());
+
+            emailResponseDTOList.add(emailResponseDTO);
         }
 
-        return emailRepository.getAllReceivedEmails(u);
+        return emailResponseDTOList;
     }
 
     public List<Email> getAllSentEmails(String email) {

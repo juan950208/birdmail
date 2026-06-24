@@ -39,6 +39,15 @@ public class EmailRepository {
         return query.getResultList();
     }
 
+    public List<EmailRecipient> getEmailRecipientByUser(User user) {
+        String sql = "SELECT er FROM EmailRecipient er WHERE er.recipient.id = :recipientId";
+        TypedQuery<EmailRecipient> query = entityManager.createQuery(sql, EmailRecipient.class)
+                .setParameter("recipientId", user.getId());
+
+        List<EmailRecipient> resultList = query.getResultList();
+        return resultList;
+    }
+
     public List<Email> getAllSentEmails(User user) {
         String sql = "SELECT e FROM Email e WHERE e.sender.id = :senderId";
 

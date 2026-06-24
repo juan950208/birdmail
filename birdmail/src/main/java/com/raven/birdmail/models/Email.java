@@ -29,4 +29,15 @@ public class Email {
     private String body;
 
     private LocalDateTime date;
+
+    @Override
+    public String toString() {
+        return "Email{" +
+                "id=" + id +
+                ", sender=" + sender +
+                ", subject='" + subject + '\'' +
+                ", body='" + body + '\'' +
+                ", date=" + date +
+                '}';
+    }
 }

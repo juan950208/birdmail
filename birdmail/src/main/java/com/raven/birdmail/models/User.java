@@ -39,4 +39,11 @@ public class User {
 
     @Column(name = "is_active")
     private boolean isActive = true;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                '}';
+    }
 }

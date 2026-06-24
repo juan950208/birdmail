@@ -28,4 +28,14 @@ public class EmailRecipient {
 
     @Enumerated(EnumType.STRING)
     private RecipientType recipientType;
+
+    @Override
+    public String toString() {
+        return "EmailRecipient{" +
+                "id=" + id +
+                ", email=" + email +
+                ", recipient=" + recipient +
+                ", recipientType=" + recipientType +
+                '}';
+    }
 }
