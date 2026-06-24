@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,8 +14,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class EmailResponseDTO {
     private String senderEmail;
-    private String recipientEmail;
     private String subject;
     private String body;
     private LocalDateTime sentAt;
+    private List<String> recipients;
 }

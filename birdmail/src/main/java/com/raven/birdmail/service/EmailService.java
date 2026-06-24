@@ -1,6 +1,7 @@
 package com.raven.birdmail.service;
 
 import com.raven.birdmail.dto.EmailRecipientDTO;
+import com.raven.birdmail.dto.EmailResponseDTO;
 import com.raven.birdmail.models.EmailRecipient;
 import com.raven.birdmail.models.User;
 import com.raven.birdmail.repository.EmailRepository;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,27 +25,39 @@ public class EmailService {
     @Autowired
     EmailRepository emailRepository;
 
-    public Email sendEmail(SendEmailDTO sendEmailDTO, String senderEmail) {
+    public EmailResponseDTO sendEmail(SendEmailDTO sendEmailDTO, String senderEmail) {
+
+        List<String> recipientsEmail = new ArrayList<>();
 
         Email email = new Email();
-        email.setSender(userRepository.findByEmail(senderEmail));
+        User sender = userRepository.findByEmail(senderEmail);
+        email.setSender(sender);
+        //email.setSender(userRepository.findByEmail(senderEmail));
         email.setSubject(sendEmailDTO.getSubject());
         email.setBody(sendEmailDTO.getBody());
         email.setDate(LocalDateTime.now());
 
         Email savedEmail = emailRepository.saveEmail(email);
 
-        for (EmailRecipientDTO emailRecipientDTO : sendEmailDTO.getEmailRecipientDTOList()) {
+        for (EmailRecipientDTO emailRecipientDTO : sendEmailDTO.getRecipients()) {
             EmailRecipient emailRecipient = new EmailRecipient();
             emailRecipient.setEmail(savedEmail);
-            emailRecipient.setRecipient(userRepository.byId(emailRecipientDTO.getRecipientId()));
+            User recipient = userRepository.byId(emailRecipientDTO.getRecipientId());
+            emailRecipient.setRecipient(recipient);
+            //emailRecipient.setRecipient(userRepository.byId(emailRecipientDTO.getRecipientId()));
             emailRecipient.setRecipientType(emailRecipientDTO.getRecipientType());
 
+            recipientsEmail.add(recipient.getEmail());
             emailRepository.saveEmailRecipientRelation(emailRecipient);
         }
 
+        EmailResponseDTO responseDTO = new EmailResponseDTO();
+        responseDTO.setSenderEmail(sender.getEmail());
+        responseDTO.setSubject(savedEmail.getSubject());
+        responseDTO.setBody(savedEmail.getBody());
+        responseDTO.setRecipients(recipientsEmail);
 
-        return null;
+        return responseDTO;
     }
 
 //    public Email sendEmail(SendEmailDTO sendEmailDTO, String senderEmail) {

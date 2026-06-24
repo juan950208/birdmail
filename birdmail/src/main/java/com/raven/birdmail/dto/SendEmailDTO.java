@@ -14,5 +14,5 @@ import java.util.List;
 public class SendEmailDTO {
     private String subject;
     private String body;
-    private List<EmailRecipientDTO> emailRecipientDTOList;
+    private List<EmailRecipientDTO> recipients;
 }
