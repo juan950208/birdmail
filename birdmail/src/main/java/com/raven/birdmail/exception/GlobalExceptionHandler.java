@@ -65,4 +65,30 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(error);
     }
+
+    @ExceptionHandler(EmailNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEmailNotFound(EmailNotFoundException ex) {
+
+        ErrorResponse error = new ErrorResponse(
+                404,
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(error);
+    }
+
+    @ExceptionHandler(NotAuthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleNotAuthorized(NotAuthorizedException ex) {
+
+        ErrorResponse error = new ErrorResponse(
+                401,
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(error);
+    }
 }

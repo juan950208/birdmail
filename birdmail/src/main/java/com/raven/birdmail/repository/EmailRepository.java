@@ -23,7 +23,7 @@ public class EmailRepository {
     }
 
     public void saveEmailRecipientRelation(EmailRecipient emailRecipient) {
-            entityManager.merge(emailRecipient);
+        entityManager.merge(emailRecipient);
     }
 
     public Email findById(Long id) {
@@ -55,6 +55,21 @@ public class EmailRepository {
                 .setParameter("senderId", user.getId());
 
         return query.getResultList();
+    }
+
+    public boolean userHasAccessToEmail(User user, Email email) {
+
+        if (email.getSender().getId().equals(user.getId())) {
+            return true;
+        }
+
+        String sql = "SELECT er FROM EmailRecipient er WHERE er.email.id = :emailId AND er.recipient.id = :recipientId";
+
+        TypedQuery<EmailRecipient> query = entityManager.createQuery(sql, EmailRecipient.class)
+                .setParameter("emailId", email.getId())
+                .setParameter("recipientId", user.getId());
+
+        return !query.getResultList().isEmpty();
     }
 
 }
