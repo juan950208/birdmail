@@ -2,7 +2,7 @@
 
 Authentication and email management system with Java and Spring boot
 
-*** Email to multiple senders already working ***
+***Email to multiple senders already working***
 
 ## Technologies
 

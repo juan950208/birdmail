@@ -24,7 +24,7 @@ public class EmailController {
     EmailService emailService;
 
     @RequestMapping(value = "birdmail/send_email", method = RequestMethod.POST)
-    public ResponseEntity<EmailListResponseDTO> sendEmail(
+    public ResponseEntity<EmailResponseDTO> sendEmail(
             @RequestHeader(value = "Authorization") String token,
             @RequestBody SendEmailDTO sendEmailDTO) {
 
@@ -34,7 +34,7 @@ public class EmailController {
 
         String senderEmail = jwtUtil.getEmailFromToken(token);
 
-        EmailListResponseDTO createdEmail = emailService.sendEmail(sendEmailDTO, senderEmail);
+        EmailResponseDTO createdEmail = emailService.sendEmail(sendEmailDTO, senderEmail);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(createdEmail);
@@ -45,13 +45,27 @@ public class EmailController {
             @RequestHeader(value = "Authorization") String token) {
 
         if (!jwtUtil.validateToken(token)) {
-            return ResponseEntity.status(401).build();
+            throw new NotAuthorizedException("Not authorized");
         }
 
         String email = jwtUtil.getEmailFromToken(token);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(emailService.getAllReceivedEmails(email));
+    }
+
+    @RequestMapping(value = "birdmail/sent")
+    public ResponseEntity<List<EmailListResponseDTO>> loadSentEmails(
+            @RequestHeader(value = "Authorization") String token) {
+
+        if (!jwtUtil.validateToken(token)) {
+            throw new NotAuthorizedException("Not authorized");
+        }
+
+        String email = jwtUtil.getEmailFromToken(token);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(emailService.getAllSentEmails(email));
     }
 
     @RequestMapping(value = "birdmail/email/{id}")

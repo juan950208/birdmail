@@ -4,7 +4,6 @@ import com.raven.birdmail.dto.EmailRecipientDTO;
 import com.raven.birdmail.dto.EmailListResponseDTO;
 import com.raven.birdmail.dto.EmailResponseDTO;
 import com.raven.birdmail.exception.EmailNotFoundException;
-import com.raven.birdmail.exception.NotAuthorizedException;
 import com.raven.birdmail.models.EmailRecipient;
 import com.raven.birdmail.models.User;
 import com.raven.birdmail.repository.EmailRepository;
@@ -12,7 +11,9 @@ import com.raven.birdmail.repository.UserRepository;
 import com.raven.birdmail.dto.SendEmailDTO;
 import com.raven.birdmail.exception.UserNotFoundException;
 import com.raven.birdmail.models.Email;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,7 +29,7 @@ public class EmailService {
     @Autowired
     EmailRepository emailRepository;
 
-    public EmailListResponseDTO sendEmail(SendEmailDTO sendEmailDTO, String senderEmail) {
+    public EmailResponseDTO sendEmail(SendEmailDTO sendEmailDTO, String senderEmail) {
 
         List<String> recipientsEmail = new ArrayList<>();
 
@@ -52,9 +53,11 @@ public class EmailService {
             emailRepository.saveEmailRecipientRelation(emailRecipient);
         }
 
-        EmailListResponseDTO responseDTO = new EmailListResponseDTO();
+        EmailResponseDTO responseDTO = new EmailResponseDTO();
         responseDTO.setSenderEmail(sender.getEmail());
         responseDTO.setSubject(savedEmail.getSubject());
+        responseDTO.setBody(savedEmail.getBody());
+        responseDTO.setRecipientsEmails(recipientsEmail);
         responseDTO.setDate(savedEmail.getDate());
 
         return responseDTO;
@@ -101,13 +104,24 @@ public class EmailService {
         return emailResponse;
     }
 
-    public List<Email> getAllSentEmails(String email) {
+    public List<EmailListResponseDTO> getAllSentEmails(String email) {
         User u = userRepository.findByEmail(email);
 
         if (u == null) {
             throw new UserNotFoundException("ERROR user not found");
         }
 
-        return emailRepository.getAllSentEmails(u);
+        List<Email> emails = emailRepository.getAllSentEmails(u);
+        List<EmailListResponseDTO> responseList = new ArrayList<>();
+
+        for (Email e : emails) {
+            EmailListResponseDTO emailResponse = new EmailListResponseDTO();
+            emailResponse.setSenderEmail(e.getSender().getEmail());
+            emailResponse.setSubject(e.getSubject());
+            emailResponse.setDate(e.getDate());
+            responseList.add(emailResponse);
+        }
+
+        return responseList;
     }
 }
