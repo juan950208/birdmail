@@ -5,15 +5,15 @@ import com.raven.birdmail.dto.EmailListResponseDTO;
 import com.raven.birdmail.dto.EmailResponseDTO;
 import com.raven.birdmail.exception.EmailNotFoundException;
 import com.raven.birdmail.models.EmailRecipient;
+import com.raven.birdmail.models.RecipientType;
 import com.raven.birdmail.models.User;
+import com.raven.birdmail.repository.EmailRecipientRepository;
 import com.raven.birdmail.repository.EmailRepository;
 import com.raven.birdmail.repository.UserRepository;
 import com.raven.birdmail.dto.SendEmailDTO;
 import com.raven.birdmail.exception.UserNotFoundException;
 import com.raven.birdmail.models.Email;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +28,9 @@ public class EmailService {
 
     @Autowired
     EmailRepository emailRepository;
+
+    @Autowired
+    EmailRecipientRepository emailRecipientRepository;
 
     public EmailResponseDTO sendEmail(SendEmailDTO sendEmailDTO, String senderEmail) {
 
@@ -66,7 +69,7 @@ public class EmailService {
     public List<EmailListResponseDTO> getAllReceivedEmails(String email) {
 
         User u = userRepository.findByEmail(email);
-        List<EmailRecipient> emailRecipientList = emailRepository.getEmailRecipientByUser(u);
+        List<EmailRecipient> emailRecipientList = emailRecipientRepository.getEmailRecipientByUser(u);
         List<EmailListResponseDTO> emailListResponseDTOList = new ArrayList<>();
 
         for (EmailRecipient emailRecipient : emailRecipientList) {
@@ -80,28 +83,6 @@ public class EmailService {
         }
 
         return emailListResponseDTOList;
-    }
-
-    public EmailResponseDTO getEmail(Long emailId, String loggedUserEmail) {
-
-        Email email = emailRepository.findById(emailId);
-        User user = userRepository.findByEmail(loggedUserEmail);
-
-        if (email == null) {
-            throw new EmailNotFoundException("Email not found");
-        }
-
-        if (!emailRepository.userHasAccessToEmail(user, email)) {
-            throw new EmailNotFoundException("Not found");
-        }
-
-        EmailResponseDTO emailResponse = new EmailResponseDTO();
-        emailResponse.setSenderEmail(email.getSender().getEmail());
-        emailResponse.setSubject(email.getSubject());
-        emailResponse.setBody(email.getBody());
-        emailResponse.setDate(email.getDate());
-
-        return emailResponse;
     }
 
     public List<EmailListResponseDTO> getAllSentEmails(String email) {
@@ -123,5 +104,42 @@ public class EmailService {
         }
 
         return responseList;
+    }
+
+    public EmailResponseDTO getEmail(Long emailId, String loggedUserEmail) {
+
+        Email email = emailRepository.findById(emailId);
+        User user = userRepository.findByEmail(loggedUserEmail);
+
+        if (email == null) {
+            throw new EmailNotFoundException("Email not found");
+        }
+
+        if (!emailRecipientRepository.userHasAccessToEmail(user, email)) {
+            throw new EmailNotFoundException("Not found");
+        }
+
+        EmailResponseDTO emailResponse = new EmailResponseDTO();
+        emailResponse.setSenderEmail(email.getSender().getEmail());
+        emailResponse.setSubject(email.getSubject());
+        emailResponse.setBody(email.getBody());
+        emailResponse.setDate(email.getDate());
+        List<String> recipientsEmail = getRecipientsEmail(email);
+        emailResponse.setRecipientsEmails(recipientsEmail);
+
+        return emailResponse;
+    }
+
+    private List<String> getRecipientsEmail(Email email) {
+        List<String> emails = new ArrayList<>();
+        List<EmailRecipient> recipients = emailRecipientRepository.getRecipients(email);
+
+        for (EmailRecipient recipient : recipients) {
+            if (recipient.getRecipientType() != RecipientType.BCC) {
+                emails.add(recipient.getRecipient().getEmail());
+            }
+        }
+
+        return emails;
     }
 }

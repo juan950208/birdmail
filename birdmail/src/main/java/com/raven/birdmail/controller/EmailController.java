@@ -23,7 +23,7 @@ public class EmailController {
     @Autowired
     EmailService emailService;
 
-    @RequestMapping(value = "birdmail/send_email", method = RequestMethod.POST)
+    @RequestMapping(value = "birdmail/email", method = RequestMethod.POST)
     public ResponseEntity<EmailResponseDTO> sendEmail(
             @RequestHeader(value = "Authorization") String token,
             @RequestBody SendEmailDTO sendEmailDTO) {

@@ -46,3 +46,8 @@ spring.datasource.password=...
 1. Open the project birdmail_frontend on VSCode.
 2. Run using live server.
 3. Access through http://localhost:5500
+
+### Currently working on
+- Email recipients excluding BCC shown on getEmail
+- Needs to be fixed that the sender can actually see all BCC recipients
+- The BCC user should see himself as a BCC receiper (but never other BCCs)

@@ -2,6 +2,7 @@ package com.raven.birdmail.repository;
 
 import com.raven.birdmail.models.Email;
 import com.raven.birdmail.models.EmailRecipient;
+import com.raven.birdmail.models.RecipientType;
 import com.raven.birdmail.models.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -39,14 +40,7 @@ public class EmailRepository {
         return query.getResultList();
     }
 
-    public List<EmailRecipient> getEmailRecipientByUser(User user) {
-        String sql = "SELECT er FROM EmailRecipient er WHERE er.recipient.id = :recipientId";
-        TypedQuery<EmailRecipient> query = entityManager.createQuery(sql, EmailRecipient.class)
-                .setParameter("recipientId", user.getId());
 
-        List<EmailRecipient> resultList = query.getResultList();
-        return resultList;
-    }
 
     public List<Email> getAllSentEmails(User user) {
         String sql = "SELECT e FROM Email e WHERE e.sender.id = :senderId";
@@ -56,20 +50,4 @@ public class EmailRepository {
 
         return query.getResultList();
     }
-
-    public boolean userHasAccessToEmail(User user, Email email) {
-
-        if (email.getSender().getId().equals(user.getId())) {
-            return true;
-        }
-
-        String sql = "SELECT er FROM EmailRecipient er WHERE er.email.id = :emailId AND er.recipient.id = :recipientId";
-
-        TypedQuery<EmailRecipient> query = entityManager.createQuery(sql, EmailRecipient.class)
-                .setParameter("emailId", email.getId())
-                .setParameter("recipientId", user.getId());
-
-        return !query.getResultList().isEmpty();
-    }
-
 }
